@@ -58,6 +58,8 @@ export function processLists(
     const zipCode = String(row["D"] ?? "").trim();
     const colO = String(row["O"] ?? "").trim();
 
+    const colX = String(row["X"] ?? "").trim();
+
     const matchedVehicles = list2Map.get(custNum);
     if (matchedVehicles && matchedVehicles.length > 0) {
       for (const vRow of matchedVehicles) {
@@ -67,6 +69,7 @@ export function processLists(
           "Zip Code": zipCode,
           "Column O": colO,
           "Registration Number": String(vRow["C"] ?? "").trim(),
+          "Column X": colX,
           "Matched": "Yes",
         });
       }
@@ -77,6 +80,7 @@ export function processLists(
         "Zip Code": zipCode,
         "Column O": colO,
         "Registration Number": "",
+        "Column X": colX,
         "Matched": "No",
       });
     }
@@ -141,6 +145,7 @@ export function processLists(
           "Zip Code": rowA["Zip Code"],
           "Column O": rowA["Column O"],
           "Registration Number": rowA["Registration Number"],
+          "Column X": rowA["Column X"],
           "Car Model": rowB["Car Model (List 3 Col E)"],
           "Vehicle Info": rowB["Vehicle Info (List 3 Col F)"],
           "Invoice Number": rowB["Invoice Number"],
@@ -153,6 +158,7 @@ export function processLists(
         "Zip Code": rowA["Zip Code"],
         "Column O": rowA["Column O"],
         "Registration Number": rowA["Registration Number"],
+        "Column X": rowA["Column X"],
         "Car Model": "",
         "Vehicle Info": "",
         "Invoice Number": "",
@@ -166,6 +172,7 @@ export function processLists(
     "Post nummer": row["Zip Code"],
     "Email": row["Column O"],
     "Bil": row["Registration Number"],
+    "Column X": row["Column X"],
   }));
 
   return { listA, listB, listC, listD };
