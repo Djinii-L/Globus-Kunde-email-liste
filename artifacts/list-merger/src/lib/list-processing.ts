@@ -1,5 +1,4 @@
 import * as XLSX from "xlsx";
-import * as fuzz from "fuzzball";
 
 export interface ListRow {
   [key: string]: string | number | undefined;
@@ -28,42 +27,11 @@ function parseSheetRaw(workbook: XLSX.WorkBook, sheetIndex: number = 0): string[
   return XLSX.utils.sheet_to_json<string[]>(sheet, { header: 1, defval: "" });
 }
 
-function getEvNames(list5Wb: XLSX.WorkBook): string[] {
-  const rows = parseSheetRaw(list5Wb);
-  const names: string[] = [];
-  for (let i = 1; i < rows.length; i++) {
-    const row = rows[i];
-    for (const cell of row) {
-      const val = String(cell ?? "").trim();
-      if (val) {
-        names.push(val);
-      }
-    }
-  }
-  return [...new Set(names)];
-}
-
-function isFuzzyMatchEv(carModel: string, evNames: string[]): boolean {
-  if (!carModel) return false;
-  const normalized = carModel.toLowerCase().trim();
-  if (!normalized) return false;
-
-  for (const evName of evNames) {
-    const evNorm = evName.toLowerCase().trim();
-    if (!evNorm) continue;
-
-    const score = fuzz.ratio(normalized, evNorm);
-    if (score >= 75) return true;
-  }
-  return false;
-}
-
 export function processLists(
   list1Wb: XLSX.WorkBook,
   list2Wb: XLSX.WorkBook,
   list3Wb: XLSX.WorkBook,
-  list4Wb: XLSX.WorkBook,
-  list5Wb: XLSX.WorkBook | null
+  list4Wb: XLSX.WorkBook
 ): ProcessedResult {
   const list1 = parseSheet(list1Wb);
   const list2 = parseSheet(list2Wb);
@@ -192,21 +160,13 @@ export function processLists(
     }
   }
 
-  const evNames = list5Wb ? getEvNames(list5Wb) : [];
-
-  const listD: ListRow[] = listC.map((row) => {
-    const carModel = String(row["Car Model"] ?? "").trim();
-    const isEv = list5Wb && carModel ? isFuzzyMatchEv(carModel, evNames) : false;
-
-    return {
-      "Customer Number": row["Customer Number"],
-      "Name": row["Name"],
-      "Zip Code": row["Zip Code"],
-      "Column O": row["Column O"],
-      "Registration Number": row["Registration Number"],
-      "Electric Vehicle": isEv ? "Yes" : "No",
-    };
-  });
+  const listD: ListRow[] = listC.map((row) => ({
+    "Kunde nummer": row["Customer Number"],
+    "Navn": row["Name"],
+    "Post nummer": row["Zip Code"],
+    "Email": row["Column O"],
+    "Bil": row["Registration Number"],
+  }));
 
   return { listA, listB, listC, listD };
 }
@@ -231,7 +191,7 @@ export function exportAllToExcel(result: ProcessedResult, fileName: string) {
   XLSX.utils.book_append_sheet(wb, wsC, "List C");
 
   const wsD = XLSX.utils.json_to_sheet(result.listD);
-  XLSX.utils.book_append_sheet(wb, wsD, "List D - Final with EV");
+  XLSX.utils.book_append_sheet(wb, wsD, "List D - Final");
 
   XLSX.writeFile(wb, fileName);
 }

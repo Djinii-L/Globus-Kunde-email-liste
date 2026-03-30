@@ -12,7 +12,6 @@ export default function Home() {
   const [list2, setList2] = useState<XLSX.WorkBook | null>(null);
   const [list3, setList3] = useState<XLSX.WorkBook | null>(null);
   const [list4, setList4] = useState<XLSX.WorkBook | null>(null);
-  const [list5, setList5] = useState<XLSX.WorkBook | null>(null);
   const [result, setResult] = useState<ProcessedResult | null>(null);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +24,7 @@ export default function Home() {
     setError(null);
     setTimeout(() => {
       try {
-        const res = processLists(list1, list2, list3, list4, list5);
+        const res = processLists(list1, list2, list3, list4);
         setResult(res);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred during processing.");
@@ -33,7 +32,7 @@ export default function Home() {
         setProcessing(false);
       }
     }, 50);
-  }, [list1, list2, list3, list4, list5]);
+  }, [list1, list2, list3, list4]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -52,7 +51,7 @@ export default function Home() {
       <main className="max-w-5xl mx-auto px-4 py-6 space-y-6">
         <section>
           <h2 className="text-sm font-semibold mb-3">Step 1: Upload your lists</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <FileUpload
               label="List 1 - Kunde rapport"
               description="Customer numbers, names, emails, zip codes (Cols A, B, D, O used)"
@@ -76,12 +75,6 @@ export default function Home() {
               description="Customer info with 'Kunde' headers and invoice numbers (Col D used)"
               onFileLoaded={setList4}
               workbook={list4}
-            />
-            <FileUpload
-              label="List 5 - EV database"
-              description="Electric vehicle names for fuzzy matching (75% threshold). Optional."
-              onFileLoaded={setList5}
-              workbook={list5}
             />
           </div>
         </section>
@@ -120,16 +113,16 @@ export default function Home() {
             <h2 className="text-sm font-semibold mb-3">Step 2: Review Results</h2>
             <Tabs defaultValue="listD">
               <TabsList>
-                <TabsTrigger value="listD">Final List D (with EV)</TabsTrigger>
+                <TabsTrigger value="listD">Final List D</TabsTrigger>
                 <TabsTrigger value="listC">List C</TabsTrigger>
                 <TabsTrigger value="listA">List A</TabsTrigger>
                 <TabsTrigger value="listB">List B</TabsTrigger>
               </TabsList>
               <TabsContent value="listD" className="mt-3">
                 <ResultsTable
-                  title="List D — Final with Electric Vehicle matching"
+                  title="List D — Final output"
                   data={result.listD}
-                  fileName="list-d-final-ev.xlsx"
+                  fileName="list-d-final.xlsx"
                 />
               </TabsContent>
               <TabsContent value="listC" className="mt-3">
@@ -163,7 +156,7 @@ export default function Home() {
             <li><strong>List A</strong> — Matches Kunde rapport (Col A) with Biler (Col A). Keeps customer info (Cols A, B, D, O) and registration number (Biler, Col C). Unmatched rows preserved.</li>
             <li><strong>List B</strong> — Matches Brugtvognslisten (Col AF) with Debitorkontokort (Col D). Customer number extracted from "Kunde" header rows.</li>
             <li><strong>List C</strong> — Combines List A and List B by customer number for a complete view.</li>
-            <li><strong>List D</strong> — Takes List C and fuzzy matches the Car Model against the EV database (75% threshold). Keeps columns A-E and adds an "Electric Vehicle" column (F).</li>
+            <li><strong>List D</strong> — Final output with columns: Kunde nummer, Navn, Post nummer, Email, Bil.</li>
           </ol>
         </section>
       </main>
