@@ -166,15 +166,29 @@ export function processLists(
     }
   }
 
-  const listD: ListRow[] = listC.map((row) => ({
-    "Kunde nummer": row["Customer Number"],
-    "Navn": row["Name"],
-    "Post nummer": row["Zip Code"],
-    "Email": row["Column O"],
-    "Bil": row["Registration Number"],
-    "Column X": row["Column X"],
-    "Faktura nummer": row["Invoice Number"],
-  }));
+  const regToInvoice = new Map<string, string>();
+  for (const row of dataList3) {
+    const colA = String(row["A"] ?? "").trim();
+    const colAF = String(row["AF"] ?? "").trim();
+    if (colA && colAF) {
+      regToInvoice.set(colA, colAF);
+    }
+  }
+
+  const listD: ListRow[] = listC.map((row) => {
+    const regNum = String(row["Registration Number"] ?? "").trim();
+    const invoiceFromList3 = regToInvoice.get(regNum) ?? "";
+
+    return {
+      "Kunde nummer": row["Customer Number"],
+      "Navn": row["Name"],
+      "Post nummer": row["Zip Code"],
+      "Email": row["Column O"],
+      "Bil": row["Registration Number"],
+      "Column X": row["Column X"],
+      "Faktura nummer": invoiceFromList3,
+    };
+  });
 
   return { listA, listB, listC, listD };
 }
