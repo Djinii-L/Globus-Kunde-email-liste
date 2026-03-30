@@ -79,7 +79,7 @@ export default function Home() {
             />
             <FileUpload
               label="List 5 - EV database"
-              description="Electric vehicle names for fuzzy matching (50% threshold). Optional."
+              description="Electric vehicle names for fuzzy matching (75% threshold). Optional."
               onFileLoaded={setList5}
               workbook={list5}
             />
@@ -163,7 +163,7 @@ export default function Home() {
             <li><strong>List A</strong> — Matches Kunde rapport (Col A) with Biler (Col A). Keeps customer info (Cols A, B, D, O) and registration number (Biler, Col C). Unmatched rows preserved.</li>
             <li><strong>List B</strong> — Matches Brugtvognslisten (Col AF) with Debitorkontokort (Col D). Customer number extracted from "Kunde" header rows.</li>
             <li><strong>List C</strong> — Combines List A and List B by customer number for a complete view.</li>
-            <li><strong>List D</strong> — Takes List C and fuzzy matches Column E (Registration Number) against the EV database (50% threshold). Adds an "Electric Vehicle" column.</li>
+            <li><strong>List D</strong> — Takes List C and fuzzy matches the Car Model against the EV database (75% threshold). Keeps columns A-E and adds an "Electric Vehicle" column (F).</li>
           </ol>
         </section>
       </main>

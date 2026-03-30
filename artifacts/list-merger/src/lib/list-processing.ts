@@ -49,11 +49,11 @@ function isFuzzyMatchEv(carModel: string, evNames: string[]): boolean {
   if (!normalized) return false;
 
   for (const evName of evNames) {
-    const score = fuzz.ratio(normalized, evName.toLowerCase());
-    if (score >= 50) return true;
+    const evNorm = evName.toLowerCase().trim();
+    if (!evNorm) continue;
 
-    const partialScore = fuzz.partial_ratio(normalized, evName.toLowerCase());
-    if (partialScore >= 50) return true;
+    const score = fuzz.ratio(normalized, evNorm);
+    if (score >= 75) return true;
   }
   return false;
 }
@@ -195,11 +195,15 @@ export function processLists(
   const evNames = list5Wb ? getEvNames(list5Wb) : [];
 
   const listD: ListRow[] = listC.map((row) => {
-    const regNum = String(row["Registration Number"] ?? "").trim();
-    const isEv = list5Wb && regNum ? isFuzzyMatchEv(regNum, evNames) : false;
+    const carModel = String(row["Car Model"] ?? "").trim();
+    const isEv = list5Wb && carModel ? isFuzzyMatchEv(carModel, evNames) : false;
 
     return {
-      ...row,
+      "Customer Number": row["Customer Number"],
+      "Name": row["Name"],
+      "Zip Code": row["Zip Code"],
+      "Column O": row["Column O"],
+      "Registration Number": row["Registration Number"],
       "Electric Vehicle": isEv ? "Yes" : "No",
     };
   });
