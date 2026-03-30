@@ -149,7 +149,6 @@ export function processLists(
           "Car Model": rowB["Car Model (List 3 Col E)"],
           "Vehicle Info": rowB["Vehicle Info (List 3 Col F)"],
           "Invoice Number": rowB["Invoice Number"],
-          "Solgt": "X",
         });
       }
     } else {
@@ -163,7 +162,6 @@ export function processLists(
         "Car Model": "",
         "Vehicle Info": "",
         "Invoice Number": "",
-        "Solgt": "",
       });
     }
   }
@@ -175,7 +173,6 @@ export function processLists(
     "Email": row["Column O"],
     "Bil": row["Registration Number"],
     "Column X": row["Column X"],
-    "Solgt": row["Solgt"],
   }));
 
   return { listA, listB, listC, listD };
