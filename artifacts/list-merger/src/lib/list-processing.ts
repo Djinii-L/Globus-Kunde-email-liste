@@ -173,6 +173,7 @@ export function processLists(
     "Email": row["Column O"],
     "Bil": row["Registration Number"],
     "Column X": row["Column X"],
+    "Faktura nummer": row["Invoice Number"],
   }));
 
   return { listA, listB, listC, listD };
