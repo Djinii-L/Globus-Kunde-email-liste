@@ -12,6 +12,7 @@ export default function Home() {
   const [list2, setList2] = useState<XLSX.WorkBook | null>(null);
   const [list3, setList3] = useState<XLSX.WorkBook | null>(null);
   const [list4, setList4] = useState<XLSX.WorkBook | null>(null);
+  const [list5, setList5] = useState<XLSX.WorkBook | null>(null);
   const [result, setResult] = useState<ProcessedResult | null>(null);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +25,7 @@ export default function Home() {
     setError(null);
     setTimeout(() => {
       try {
-        const res = processLists(list1, list2, list3, list4);
+        const res = processLists(list1, list2, list3, list4, list5);
         setResult(res);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred during processing.");
@@ -32,7 +33,7 @@ export default function Home() {
         setProcessing(false);
       }
     }, 50);
-  }, [list1, list2, list3, list4]);
+  }, [list1, list2, list3, list4, list5]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -42,7 +43,7 @@ export default function Home() {
           <div>
             <h1 className="text-lg font-bold">List Merger</h1>
             <p className="text-xs text-muted-foreground">
-              Upload your 4 lists, merge and compare them, then export to Excel
+              Upload your lists, merge and compare them, then export to Excel
             </p>
           </div>
         </div>
@@ -51,30 +52,36 @@ export default function Home() {
       <main className="max-w-5xl mx-auto px-4 py-6 space-y-6">
         <section>
           <h2 className="text-sm font-semibold mb-3">Step 1: Upload your lists</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <FileUpload
-              label="List 1 — Customers"
+              label="List 1 - Kunde rapport"
               description="Customer numbers, names, emails, zip codes (Cols A, B, D, O used)"
               onFileLoaded={setList1}
               workbook={list1}
             />
             <FileUpload
-              label="List 2 — Vehicles"
+              label="List 2 - Biler"
               description="Customer numbers, vehicle models, registration numbers (Cols A, C used)"
               onFileLoaded={setList2}
               workbook={list2}
             />
             <FileUpload
-              label="List 3 — Sold Vehicles"
+              label="List 3 - Brugtvognslisten"
               description="Sold vehicles with registration number, car model, invoice number (Cols E, F, AF used)"
               onFileLoaded={setList3}
               workbook={list3}
             />
             <FileUpload
-              label="List 4 — e-conomics Export"
+              label="List 4 - Debitorkontokort"
               description="Customer info with 'Kunde' headers and invoice numbers (Col D used)"
               onFileLoaded={setList4}
               workbook={list4}
+            />
+            <FileUpload
+              label="List 5 - EV database"
+              description="Electric vehicle names for fuzzy matching (50% threshold). Optional."
+              onFileLoaded={setList5}
+              workbook={list5}
             />
           </div>
         </section>
@@ -111,17 +118,25 @@ export default function Home() {
         {result && (
           <section>
             <h2 className="text-sm font-semibold mb-3">Step 2: Review Results</h2>
-            <Tabs defaultValue="listC">
+            <Tabs defaultValue="listD">
               <TabsList>
-                <TabsTrigger value="listC">Final List (List C)</TabsTrigger>
+                <TabsTrigger value="listD">Final List D (with EV)</TabsTrigger>
+                <TabsTrigger value="listC">List C</TabsTrigger>
                 <TabsTrigger value="listA">List A</TabsTrigger>
                 <TabsTrigger value="listB">List B</TabsTrigger>
               </TabsList>
+              <TabsContent value="listD" className="mt-3">
+                <ResultsTable
+                  title="List D — Final with Electric Vehicle matching"
+                  data={result.listD}
+                  fileName="list-d-final-ev.xlsx"
+                />
+              </TabsContent>
               <TabsContent value="listC" className="mt-3">
                 <ResultsTable
-                  title="List C — Final Combined (All customers with matched car models)"
+                  title="List C — All customers with matched car models"
                   data={result.listC}
-                  fileName="list-c-final.xlsx"
+                  fileName="list-c-combined.xlsx"
                 />
               </TabsContent>
               <TabsContent value="listA" className="mt-3">
@@ -133,7 +148,7 @@ export default function Home() {
               </TabsContent>
               <TabsContent value="listB" className="mt-3">
                 <ResultsTable
-                  title="List B — Sold Vehicles matched with e-conomics data"
+                  title="List B — Sold Vehicles matched with Debitorkontokort"
                   data={result.listB}
                   fileName="list-b-sold-vehicles.xlsx"
                 />
@@ -145,9 +160,10 @@ export default function Home() {
         <section className="border rounded-lg p-4 bg-muted/30">
           <h3 className="text-sm font-semibold mb-2">How it works</h3>
           <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
-            <li><strong>List A</strong> is created by matching List 1 (Col A) with List 2 (Col A). Keeps customer info (Cols A, B, D, O) and registration number (List 2, Col C). Unmatched rows are preserved.</li>
-            <li><strong>List B</strong> is created by matching List 3 (Col AF - invoice number) with List 4 (Col D). The customer number is extracted from the "Kunde" header rows in List 4.</li>
-            <li><strong>List C</strong> combines List A and List B by customer number, giving you a complete view of customers with their vehicle and invoice information.</li>
+            <li><strong>List A</strong> — Matches Kunde rapport (Col A) with Biler (Col A). Keeps customer info (Cols A, B, D, O) and registration number (Biler, Col C). Unmatched rows preserved.</li>
+            <li><strong>List B</strong> — Matches Brugtvognslisten (Col AF) with Debitorkontokort (Col D). Customer number extracted from "Kunde" header rows.</li>
+            <li><strong>List C</strong> — Combines List A and List B by customer number for a complete view.</li>
+            <li><strong>List D</strong> — Takes List C and fuzzy matches Column E (Registration Number) against the EV database (50% threshold). Adds an "Electric Vehicle" column.</li>
           </ol>
         </section>
       </main>

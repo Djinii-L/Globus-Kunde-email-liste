@@ -1,4 +1,5 @@
 import * as XLSX from "xlsx";
+import * as fuzz from "fuzzball";
 
 export interface ListRow {
   [key: string]: string | number | undefined;
@@ -8,12 +9,7 @@ export interface ProcessedResult {
   listA: ListRow[];
   listB: ListRow[];
   listC: ListRow[];
-}
-
-function getColumnValue(row: ListRow, colIndex: number): string {
-  const colLetter = XLSX.utils.encode_col(colIndex);
-  const val = row[colLetter] ?? row[colIndex] ?? Object.values(row)[colIndex];
-  return val !== undefined && val !== null ? String(val).trim() : "";
+  listD: ListRow[];
 }
 
 function parseSheet(workbook: XLSX.WorkBook, sheetIndex: number = 0): ListRow[] {
@@ -32,20 +28,47 @@ function parseSheetRaw(workbook: XLSX.WorkBook, sheetIndex: number = 0): string[
   return XLSX.utils.sheet_to_json<string[]>(sheet, { header: 1, defval: "" });
 }
 
+function getEvNames(list5Wb: XLSX.WorkBook): string[] {
+  const rows = parseSheetRaw(list5Wb);
+  const names: string[] = [];
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    for (const cell of row) {
+      const val = String(cell ?? "").trim();
+      if (val) {
+        names.push(val);
+      }
+    }
+  }
+  return [...new Set(names)];
+}
+
+function isFuzzyMatchEv(carModel: string, evNames: string[]): boolean {
+  if (!carModel) return false;
+  const normalized = carModel.toLowerCase().trim();
+  if (!normalized) return false;
+
+  for (const evName of evNames) {
+    const score = fuzz.ratio(normalized, evName.toLowerCase());
+    if (score >= 50) return true;
+
+    const partialScore = fuzz.partial_ratio(normalized, evName.toLowerCase());
+    if (partialScore >= 50) return true;
+  }
+  return false;
+}
+
 export function processLists(
   list1Wb: XLSX.WorkBook,
   list2Wb: XLSX.WorkBook,
   list3Wb: XLSX.WorkBook,
-  list4Wb: XLSX.WorkBook
+  list4Wb: XLSX.WorkBook,
+  list5Wb: XLSX.WorkBook | null
 ): ProcessedResult {
   const list1 = parseSheet(list1Wb);
   const list2 = parseSheet(list2Wb);
   const list3 = parseSheet(list3Wb);
   const list4Raw = parseSheetRaw(list4Wb);
-
-  const headerRow1 = list1[0];
-  const headerRow2 = list2[0];
-  const headerRow3 = list3[0];
 
   const dataList1 = list1.slice(1);
   const dataList2 = list2.slice(1);
@@ -169,7 +192,19 @@ export function processLists(
     }
   }
 
-  return { listA, listB, listC };
+  const evNames = list5Wb ? getEvNames(list5Wb) : [];
+
+  const listD: ListRow[] = listC.map((row) => {
+    const regNum = String(row["Registration Number"] ?? "").trim();
+    const isEv = list5Wb && regNum ? isFuzzyMatchEv(regNum, evNames) : false;
+
+    return {
+      ...row,
+      "Electric Vehicle": isEv ? "Yes" : "No",
+    };
+  });
+
+  return { listA, listB, listC, listD };
 }
 
 export function exportToExcel(data: ListRow[], fileName: string) {
@@ -183,13 +218,16 @@ export function exportAllToExcel(result: ProcessedResult, fileName: string) {
   const wb = XLSX.utils.book_new();
 
   const wsA = XLSX.utils.json_to_sheet(result.listA);
-  XLSX.utils.book_append_sheet(wb, wsA, "List A - Customers & Vehicles");
+  XLSX.utils.book_append_sheet(wb, wsA, "List A");
 
   const wsB = XLSX.utils.json_to_sheet(result.listB);
-  XLSX.utils.book_append_sheet(wb, wsB, "List B - Sold Vehicles");
+  XLSX.utils.book_append_sheet(wb, wsB, "List B");
 
   const wsC = XLSX.utils.json_to_sheet(result.listC);
-  XLSX.utils.book_append_sheet(wb, wsC, "List C - Final Combined");
+  XLSX.utils.book_append_sheet(wb, wsC, "List C");
+
+  const wsD = XLSX.utils.json_to_sheet(result.listD);
+  XLSX.utils.book_append_sheet(wb, wsD, "List D - Final with EV");
 
   XLSX.writeFile(wb, fileName);
 }
