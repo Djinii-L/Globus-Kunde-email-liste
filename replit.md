@@ -21,7 +21,8 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 ```text
 artifacts-monorepo/
 ├── artifacts/              # Deployable applications
-│   └── api-server/         # Express API server
+│   ├── api-server/         # Express API server
+│   └── list-merger/        # React+Vite frontend - List Merger app
 ├── lib/                    # Shared libraries
 │   ├── api-spec/           # OpenAPI spec + Orval codegen config
 │   ├── api-client-react/   # Generated React Query hooks
@@ -34,6 +35,27 @@ artifacts-monorepo/
 ├── tsconfig.json           # Root TS project references
 └── package.json            # Root package with hoisted devDeps
 ```
+
+## Applications
+
+### List Merger (`artifacts/list-merger`)
+
+Frontend-only React+Vite web app that merges/compares 4 Excel lists and exports results.
+
+**Features:**
+- Upload 4 Excel/CSV lists (customers, vehicles, sold vehicles, e-conomics export)
+- Matches customers with vehicles by customer number (List A)
+- Matches sold vehicles with invoice data using "Kunde" headers (List B)
+- Combines all data into a final comprehensive list (List C)
+- Preview uploaded files, view results in tabs, export individual or all lists to Excel
+- Uses `xlsx` library for client-side Excel parsing/export
+- No backend required - all processing happens in the browser
+
+**Key files:**
+- `src/pages/home.tsx` - Main page with upload UI and results display
+- `src/lib/list-processing.ts` - Core data processing logic
+- `src/components/FileUpload.tsx` - File upload component with drag-and-drop
+- `src/components/ResultsTable.tsx` - Results table with export capability
 
 ## TypeScript & Composite Projects
 

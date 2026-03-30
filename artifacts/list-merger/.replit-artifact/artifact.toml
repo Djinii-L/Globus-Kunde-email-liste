@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "List Merger"
+version = "1.0.0"
+id = "artifacts/list-merger"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23189
+
+[services.development]
+run = "pnpm --filter @workspace/list-merger run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/list-merger", "run", "build" ]
+publicDir = "artifacts/list-merger/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23189"
+BASE_PATH = "/"
