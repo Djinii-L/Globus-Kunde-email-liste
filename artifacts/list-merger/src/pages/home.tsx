@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/FileUpload";
 import { ResultsTable } from "@/components/ResultsTable";
-import { processLists, exportAllToExcel, type ProcessedResult } from "@/lib/list-processing";
+import { processLists, exportToExcel, exportAllToExcel, type ProcessedResult } from "@/lib/list-processing";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Download, Loader2, ListChecks } from "lucide-react";
 import type * as XLSX from "xlsx";
@@ -90,15 +90,26 @@ export default function Home() {
             {processing ? "Processing..." : "Process & Merge Lists"}
           </Button>
           {result && (
-            <Button
-              variant="outline"
-              size="lg"
-              className="gap-2"
-              onClick={() => exportAllToExcel(result, "merged-lists.xlsx")}
-            >
-              <Download className="h-4 w-4" />
-              Download All as Excel
-            </Button>
+            <>
+              <Button
+                variant="outline"
+                size="lg"
+                className="gap-2"
+                onClick={() => exportToExcel(result.listD, "final-list-d.xlsx")}
+              >
+                <Download className="h-4 w-4" />
+                Download Final List D
+              </Button>
+              <Button
+                variant="ghost"
+                size="lg"
+                className="gap-2"
+                onClick={() => exportAllToExcel(result, "merged-lists-all.xlsx")}
+              >
+                <Download className="h-4 w-4" />
+                Download All Sheets
+              </Button>
+            </>
           )}
         </section>
 
