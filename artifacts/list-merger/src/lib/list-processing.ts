@@ -90,18 +90,22 @@ export function processLists(
   let currentKundeNumber = "";
   for (let i = 0; i < list4Raw.length; i++) {
     const rawRow = list4Raw[i];
-    const firstCell = String(rawRow[0] ?? "").trim();
 
-    const kundeMatch = firstCell.match(/^Kunde\s+(\d+)/i);
-    if (kundeMatch) {
-      currentKundeNumber = kundeMatch[1];
-      continue;
+    for (const cell of rawRow) {
+      const cellStr = String(cell ?? "").trim();
+      const kundeMatch = cellStr.match(/^Kunde\s+(\d+)/i);
+      if (kundeMatch) {
+        currentKundeNumber = kundeMatch[1];
+        break;
+      }
     }
 
-    if (currentKundeNumber && rawRow.length > 3) {
-      const colD = String(rawRow[3] ?? "").trim();
-      if (colD) {
-        kundeMap.set(colD, currentKundeNumber);
+    if (currentKundeNumber) {
+      for (const cell of rawRow) {
+        const cellStr = String(cell ?? "").trim();
+        if (cellStr && cellStr !== currentKundeNumber && !cellStr.match(/^Kunde\s/i)) {
+          kundeMap.set(cellStr, currentKundeNumber);
+        }
       }
     }
   }
@@ -109,11 +113,12 @@ export function processLists(
   const listB: ListRow[] = [];
   for (const row of dataList3) {
     const colAF = String(row["AF"] ?? "").trim();
+    const colAFNum = Number(colAF);
     const colE = String(row["E"] ?? "").trim();
     const colF = String(row["F"] ?? "").trim();
 
-    if (colAF && kundeMap.has(colAF)) {
-      const customerNumber = kundeMap.get(colAF)!;
+    if (colAF && !isNaN(colAFNum) && colAFNum > 0) {
+      const customerNumber = kundeMap.get(colAF) ?? "";
       listB.push({
         "Invoice Number": colAF,
         "Car Model (List 3 Col E)": colE,
