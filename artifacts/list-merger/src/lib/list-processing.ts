@@ -171,14 +171,24 @@ export function processLists(
     }
   }
 
-  const listD: ListRow[] = listC.map((row) => ({
-    "Kunde nummer": row["Customer Number"],
-    "Navn": row["Name"],
-    "Post nummer": row["Zip Code"],
-    "Email": row["Column O"],
-    "Bil": row["Registration Number"],
-    "Oprettelsesdato for kunde": row["Column X"],
-  }));
+  const listBCustNumbers = new Set<string>();
+  for (const row of listB) {
+    const cn = String(row["Customer Number"] ?? "").trim();
+    if (cn) listBCustNumbers.add(cn);
+  }
+
+  const listD: ListRow[] = listC.map((row) => {
+    const custNum = String(row["Customer Number"] ?? "").trim();
+    return {
+      "Kunde nummer": row["Customer Number"],
+      "Navn": row["Name"],
+      "Post nummer": row["Zip Code"],
+      "Email": row["Column O"],
+      "Bil": row["Registration Number"],
+      "Oprettelsesdato for kunde": row["Column X"],
+      "Solgt til kunde": listBCustNumbers.has(custNum) ? "X" : "",
+    };
+  });
 
   return { listA, listB, listC, listD };
 }
