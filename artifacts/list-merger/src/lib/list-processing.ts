@@ -196,14 +196,14 @@ export function processLists(
     return {
       "Kunde nummer": row["Customer Number"],
       "Navn": row["Name"],
-      "Post nummer": row["Zip Code"],
       "Telefon": row["Column F"],
       "Email": row["Column O"],
+      "Post nummer": row["Zip Code"],
       "Bil": row["Registration Number"],
       "Oprettelsesdato for kunde": row["Column X"],
-      "Kunde-Bemærkninger": row["Column Y"],
-      "Bil-Bemærkninger": row["Column P (List 2)"],
       "Solgt til kunde": listBCustNumbers.has(custNum) ? "X" : "",
+      "Bil-Bemærkninger": row["Column P (List 2)"],
+      "Kunde-Bemærkninger": row["Column Y"],
     };
   });
 
