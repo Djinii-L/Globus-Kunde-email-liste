@@ -56,6 +56,7 @@ export function processLists(
     const custNum = String(row["A"] ?? "").trim();
     const name = String(row["B"] ?? "").trim();
     const zipCode = String(row["D"] ?? "").trim();
+    const colF = String(row["F"] ?? "").trim();
     const colO = String(row["O"] ?? "").trim();
 
     const colX = String(row["X"] ?? "").trim();
@@ -68,6 +69,7 @@ export function processLists(
           "Customer Number": custNum,
           "Name": name,
           "Zip Code": zipCode,
+          "Column F": colF,
           "Column O": colO,
           "Registration Number": String(vRow["C"] ?? "").trim(),
           "Column X": colX,
@@ -81,6 +83,7 @@ export function processLists(
         "Customer Number": custNum,
         "Name": name,
         "Zip Code": zipCode,
+        "Column F": colF,
         "Column O": colO,
         "Registration Number": "",
         "Column X": colX,
@@ -153,6 +156,7 @@ export function processLists(
           "Customer Number": rowA["Customer Number"],
           "Name": rowA["Name"],
           "Zip Code": rowA["Zip Code"],
+          "Column F": rowA["Column F"],
           "Column O": rowA["Column O"],
           "Registration Number": rowA["Registration Number"],
           "Column X": rowA["Column X"],
@@ -168,6 +172,7 @@ export function processLists(
         "Customer Number": rowA["Customer Number"],
         "Name": rowA["Name"],
         "Zip Code": rowA["Zip Code"],
+        "Column F": rowA["Column F"],
         "Column O": rowA["Column O"],
         "Registration Number": rowA["Registration Number"],
         "Column X": rowA["Column X"],
@@ -192,6 +197,7 @@ export function processLists(
       "Kunde nummer": row["Customer Number"],
       "Navn": row["Name"],
       "Post nummer": row["Zip Code"],
+      "Telefon": row["Column F"],
       "Email": row["Column O"],
       "Bil": row["Registration Number"],
       "Oprettelsesdato for kunde": row["Column X"],
