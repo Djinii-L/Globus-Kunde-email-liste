@@ -72,6 +72,7 @@ export function processLists(
           "Registration Number": String(vRow["C"] ?? "").trim(),
           "Column X": colX,
           "Column Y": colY,
+          "Column P (List 2)": String(vRow["P"] ?? "").trim(),
           "Matched": "Yes",
         });
       }
@@ -84,6 +85,7 @@ export function processLists(
         "Registration Number": "",
         "Column X": colX,
         "Column Y": colY,
+        "Column P (List 2)": "",
         "Matched": "No",
       });
     }
@@ -155,6 +157,7 @@ export function processLists(
           "Registration Number": rowA["Registration Number"],
           "Column X": rowA["Column X"],
           "Column Y": rowA["Column Y"],
+          "Column P (List 2)": rowA["Column P (List 2)"],
           "Car Model": rowB["Car Model (List 3 Col E)"],
           "Vehicle Info": rowB["Vehicle Info (List 3 Col F)"],
           "Invoice Number": rowB["Invoice Number"],
@@ -169,6 +172,7 @@ export function processLists(
         "Registration Number": rowA["Registration Number"],
         "Column X": rowA["Column X"],
         "Column Y": rowA["Column Y"],
+        "Column P (List 2)": rowA["Column P (List 2)"],
         "Car Model": "",
         "Vehicle Info": "",
         "Invoice Number": "",
@@ -192,6 +196,7 @@ export function processLists(
       "Bil": row["Registration Number"],
       "Oprettelsesdato for kunde": row["Column X"],
       "Kunde-Bemærkninger": row["Column Y"],
+      "Bil-Bemærkninger": row["Column P (List 2)"],
       "Solgt til kunde": listBCustNumbers.has(custNum) ? "X" : "",
     };
   });
