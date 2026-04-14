@@ -59,6 +59,7 @@ export function processLists(
     const colO = String(row["O"] ?? "").trim();
 
     const colX = String(row["X"] ?? "").trim();
+    const colY = String(row["Y"] ?? "").trim();
 
     const matchedVehicles = list2Map.get(custNum);
     if (matchedVehicles && matchedVehicles.length > 0) {
@@ -70,6 +71,7 @@ export function processLists(
           "Column O": colO,
           "Registration Number": String(vRow["C"] ?? "").trim(),
           "Column X": colX,
+          "Column Y": colY,
           "Matched": "Yes",
         });
       }
@@ -81,6 +83,7 @@ export function processLists(
         "Column O": colO,
         "Registration Number": "",
         "Column X": colX,
+        "Column Y": colY,
         "Matched": "No",
       });
     }
@@ -151,6 +154,7 @@ export function processLists(
           "Column O": rowA["Column O"],
           "Registration Number": rowA["Registration Number"],
           "Column X": rowA["Column X"],
+          "Column Y": rowA["Column Y"],
           "Car Model": rowB["Car Model (List 3 Col E)"],
           "Vehicle Info": rowB["Vehicle Info (List 3 Col F)"],
           "Invoice Number": rowB["Invoice Number"],
@@ -164,6 +168,7 @@ export function processLists(
         "Column O": rowA["Column O"],
         "Registration Number": rowA["Registration Number"],
         "Column X": rowA["Column X"],
+        "Column Y": rowA["Column Y"],
         "Car Model": "",
         "Vehicle Info": "",
         "Invoice Number": "",
@@ -186,6 +191,7 @@ export function processLists(
       "Email": row["Column O"],
       "Bil": row["Registration Number"],
       "Oprettelsesdato for kunde": row["Column X"],
+      "Kunde-Bemærkninger": row["Column Y"],
       "Solgt til kunde": listBCustNumbers.has(custNum) ? "X" : "",
     };
   });
