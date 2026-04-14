@@ -202,8 +202,8 @@ export function processLists(
       "Bil": row["Registration Number"],
       "Oprettelsesdato for kunde": row["Column X"],
       "Solgt til kunde": listBCustNumbers.has(custNum) ? "X" : "",
-      "Bil-Bemærkninger": row["Column P (List 2)"],
       "Kunde-Bemærkninger": row["Column Y"],
+      "Bil-Bemærkninger": row["Column P (List 2)"],
     };
   });
 
